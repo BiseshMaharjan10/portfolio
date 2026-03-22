@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 bg-zinc-950 font-body text-zinc-100 antialiased;
+  }
+
+  * {
+    @apply border-zinc-700;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes starDrift {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+      transform: translate3d(-42px, 120vh, 0);
+    }
+  }
+
+  @keyframes starTwinkle {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pageFade {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .fade-in {
+    opacity: 0;
+    animation: fadeInUp 700ms ease-out forwards;
+  }
+
+  .page-fade {
+    animation: pageFade 400ms ease-out;
+  }
+
+  .star {
+    position: absolute;
+    display: block;
+    border-radius: 9999px;
+    animation-name: starDrift, starTwinkle;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+    will-change: transform, opacity;
+    mix-blend-mode: screen;
+  }
+
+  .star-dust {
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(224, 242, 254, 0.28) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 70% 60%, rgba(186, 230, 253, 0.22) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 40% 80%, rgba(165, 243, 252, 0.2) 0 1px, transparent 1.5px);
+    background-size: 180px 180px, 220px 220px, 260px 260px;
+    background-position: 0 0, 30px 50px, -20px 40px;
+    opacity: 0.75;
+  }
+
+  .star-near {
+    background: rgba(236, 254, 255, 1);
+    box-shadow: 0 0 18px rgba(186, 230, 253, 0.95);
+  }
+
+  .star-far {
+    background: rgba(224, 242, 254, 0.95);
+    box-shadow: 0 0 12px rgba(165, 243, 252, 0.65);
+  }
+}
