@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AboutMe from './components/AboutMe'
 import ContactForm from './components/ContactForm'
 import ProjectCard from './components/ProjectCard'
@@ -176,6 +176,27 @@ function ScrollManager() {
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+
+  const scrollToSection = (sectionId) => {
+    const targetElement = document.getElementById(sectionId)
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const handleMobileNavTap = (event, path, sectionId) => {
+    setIsMobileMenuOpen(false)
+
+    if (pathname === path) {
+      event.preventDefault()
+      window.requestAnimationFrame(() => scrollToSection(sectionId))
+      return
+    }
+
+    event.preventDefault()
+    navigate(path)
+  }
 
   useEffect(() => {
     setIsMobileMenuOpen(false)
@@ -246,22 +267,38 @@ function App() {
             <div className="mt-3 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 backdrop-blur-xl">
               <ul className="space-y-4 text-lg text-zinc-300">
                 <li>
-                  <Link to="/" className="transition-colors hover:text-cyan-200">
+                  <Link
+                    to="/"
+                    onClick={(event) => handleMobileNavTap(event, '/', 'about')}
+                    className="transition-colors hover:text-cyan-200"
+                  >
                     About
                   </Link>
                 </li>
                 <li>
-                  <Link to="/skills" className="transition-colors hover:text-cyan-200">
+                  <Link
+                    to="/skills"
+                    onClick={(event) => handleMobileNavTap(event, '/skills', 'skills')}
+                    className="transition-colors hover:text-cyan-200"
+                  >
                     Skills
                   </Link>
                 </li>
                 <li>
-                  <Link to="/projects" className="transition-colors hover:text-cyan-200">
+                  <Link
+                    to="/projects"
+                    onClick={(event) => handleMobileNavTap(event, '/projects', 'projects')}
+                    className="transition-colors hover:text-cyan-200"
+                  >
                     Projects
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact" className="transition-colors hover:text-cyan-200">
+                  <Link
+                    to="/contact"
+                    onClick={(event) => handleMobileNavTap(event, '/contact', 'contact')}
+                    className="transition-colors hover:text-cyan-200"
+                  >
                     Contact
                   </Link>
                 </li>
