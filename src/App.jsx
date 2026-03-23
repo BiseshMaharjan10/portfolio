@@ -69,9 +69,19 @@ function ProjectsSection() {
           Swipe left or right to view projects
         </p>
 
+        <div className="-mx-1 overflow-x-auto pb-1 md:hidden no-scrollbar">
+          <div className="flex snap-x snap-mandatory gap-4 px-1">
+            {projects.map((project) => (
+              <div key={`mobile-${project.title}`} className="w-[92%] max-w-[430px] flex-none snap-center">
+                <ProjectCard project={project} />
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div
           onWheel={handleWheel}
-          className="relative h-[560px] overflow-hidden rounded-3xl border border-cyan-300/20 bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.10),rgba(2,6,23,0.95)_68%)] [perspective:1400px]"
+          className="relative hidden h-[560px] overflow-hidden rounded-3xl border border-cyan-300/20 bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.10),rgba(2,6,23,0.95)_68%)] [perspective:1400px] md:block"
         >
           {projects.map((project, index) => {
             const offset = getRelativeOffset(index)

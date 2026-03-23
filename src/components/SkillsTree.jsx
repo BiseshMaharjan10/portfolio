@@ -81,8 +81,9 @@ export default function SkillsTree({ categories = [] }) {
 
     const spawnBalls = (w, h) => {
       const count = skillNodes.length
-      const cols = Math.max(3, Math.ceil(Math.sqrt(count * 1.2)))
+      const cols = w < 640 ? 3 : w < 900 ? 4 : Math.max(4, Math.ceil(Math.sqrt(count * 1.2)))
       const rows = Math.max(2, Math.ceil(count / cols))
+      const sizeScale = w < 640 ? 0.72 : w < 900 ? 0.86 : 1
 
       ballsRef.current = skillNodes.map((node, index) => {
         const col = index % cols
@@ -98,6 +99,7 @@ export default function SkillsTree({ categories = [] }) {
           vy: (Math.random() - 0.5) * 0.35,
           phase: Math.random() * Math.PI * 2,
           alpha: 0,
+          size: clamp(Math.round(node.size * sizeScale), 24, 58),
         }
       })
     }
@@ -350,8 +352,8 @@ export default function SkillsTree({ categories = [] }) {
       <div className='w-full rounded-3xl border border-cyan-300/25 bg-[radial-gradient(circle_at_50%_18%,rgba(34,211,238,0.17),rgba(2,6,23,0.94)_58%)] p-3 md:p-5'>
         <div
           ref={stageRef}
-          className='relative w-full overflow-hidden rounded-2xl border border-white/10'
-          style={{ height: '560px', background: '#0b0c14', cursor: 'default' }}
+          className='relative h-[500px] w-full overflow-hidden rounded-2xl border border-white/10 md:h-[560px]'
+          style={{ background: '#0b0c14', cursor: 'default' }}
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
           onClick={onClick}
@@ -359,11 +361,11 @@ export default function SkillsTree({ categories = [] }) {
           <canvas ref={canvasRef} className='absolute inset-0' />
 
           <div
-            className='pointer-events-none absolute bottom-7 left-1/2 -translate-x-1/2 select-none whitespace-nowrap transition-all duration-300'
+            className='pointer-events-none absolute bottom-6 left-1/2 max-w-[92%] -translate-x-1/2 overflow-hidden text-ellipsis text-center select-none whitespace-nowrap transition-all duration-300'
             style={{
               fontFamily: '"Space Grotesk", sans-serif',
               fontWeight: 700,
-              fontSize: hovered ? '54px' : '44px',
+              fontSize: hovered ? 'clamp(28px,10vw,54px)' : 'clamp(22px,8vw,44px)',
               color: hovered ? hoveredColor : 'rgba(255,255,255,0.06)',
               letterSpacing: '0.08em',
             }}
