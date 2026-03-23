@@ -65,6 +65,10 @@ function ProjectsSection() {
       </p>
 
       <div className="space-y-4">
+        <p className="text-xs uppercase tracking-[0.16em] text-cyan-200/80">
+          Swipe left or right to view projects
+        </p>
+
         <div
           onWheel={handleWheel}
           className="relative h-[560px] overflow-hidden rounded-3xl border border-cyan-300/20 bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.10),rgba(2,6,23,0.95)_68%)] [perspective:1400px]"
@@ -190,12 +194,12 @@ function App() {
             </li>
           </ul>
 
-          <a
-            href="#contact"
+          <Link
+            to="/contact"
             className="rounded-lg border border-cyan-300/40 bg-cyan-400/15 px-3 py-2 text-sm font-medium text-cyan-100 transition-colors duration-300 hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
           >
             Hire Me
-          </a>
+          </Link>
         </nav>
       </header>
 

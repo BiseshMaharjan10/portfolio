@@ -1,154 +1,386 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-const nodeLayout = [
-  { top: '12%', left: '50%' },
-  { top: '30%', left: '76%' },
-  { top: '68%', left: '76%' },
-  { top: '86%', left: '50%' },
-  { top: '68%', left: '24%' },
-  { top: '30%', left: '24%' },
-]
+const categoryPalette = {
+  Languages: [96, 165, 250],
+  Frontend: [167, 139, 250],
+  Backend: [52, 211, 153],
+  Databases: [45, 212, 191],
+  Tools: [251, 191, 36],
+  Concepts: [244, 114, 182],
+}
 
-export default function SkillsTree({ categories }) {
-  const frontendIndex = categories.findIndex((category) => category.title === 'Frontend')
-  const defaultIndex = frontendIndex === -1 ? 0 : frontendIndex
-  const [activeIndex, setActiveIndex] = useState(defaultIndex)
+const fallbackColor = [148, 163, 184]
 
-  const activeCategory = categories[activeIndex]
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value))
+}
 
-  const activeNodePosition = useMemo(() => {
-    return nodeLayout[activeIndex % nodeLayout.length]
-  }, [activeIndex])
+function toHex([r, g, b]) {
+  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`
+}
+
+function normalizeCategory(title) {
+  return (title || 'General').trim()
+}
+
+export default function SkillsTree({ categories = [] }) {
+  const stageRef = useRef(null)
+  const canvasRef = useRef(null)
+  const ballsRef = useRef([])
+  const mouseRef = useRef({ x: -9999, y: -9999 })
+  const hovRef = useRef(null)
+  const rafRef = useRef(null)
+
+  const [hovered, setHovered] = useState(null)
+
+  const skillNodes = useMemo(() => {
+    const flattened = []
+
+    categories.forEach((category) => {
+      const title = normalizeCategory(category.title)
+      const color = categoryPalette[title] || fallbackColor
+
+      category.items.forEach((item) => {
+        const level = item.level || 70
+        flattened.push({
+          name: item.name.toUpperCase(),
+          cat: title,
+          tip: item.tip,
+          level,
+          color,
+          size: clamp(Math.round(22 + level * 0.36), 32, 58),
+        })
+      })
+    })
+
+    return flattened
+  }, [categories])
+
+  const legend = useMemo(() => {
+    return categories.map((category) => {
+      const title = normalizeCategory(category.title)
+      return {
+        label: title,
+        color: toHex(categoryPalette[title] || fallbackColor),
+      }
+    })
+  }, [categories])
+
+  const hoveredColor = hovered ? toHex(hovered.color) : '#ffffff'
+
+  useEffect(() => {
+    const stage = stageRef.current
+    const canvas = canvasRef.current
+    if (!stage || !canvas || !skillNodes.length) {
+      return undefined
+    }
+
+    const ctx = canvas.getContext('2d')
+    let width = 0
+    let height = 0
+
+    const spawnBalls = (w, h) => {
+      const count = skillNodes.length
+      const cols = Math.max(3, Math.ceil(Math.sqrt(count * 1.2)))
+      const rows = Math.max(2, Math.ceil(count / cols))
+
+      ballsRef.current = skillNodes.map((node, index) => {
+        const col = index % cols
+        const row = Math.floor(index / cols)
+        const zoneWidth = w / cols
+        const zoneHeight = (h * 0.72) / rows
+
+        return {
+          ...node,
+          x: zoneWidth * col + zoneWidth / 2 + (Math.random() - 0.5) * zoneWidth * 0.4,
+          y: zoneHeight * row + h * 0.08 + zoneHeight / 2 + (Math.random() - 0.5) * zoneHeight * 0.34,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          phase: Math.random() * Math.PI * 2,
+          alpha: 0,
+        }
+      })
+    }
+
+    const resize = () => {
+      const rect = stage.getBoundingClientRect()
+      width = rect.width
+      height = rect.height
+
+      canvas.width = width * window.devicePixelRatio
+      canvas.height = height * window.devicePixelRatio
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+
+      spawnBalls(width, height)
+    }
+
+    const drawBall = (ball, isHovered) => {
+      const [r, g, b] = ball.color
+      const radius = ball.size * (isHovered ? 1.16 : 1)
+
+      ctx.globalAlpha = ball.alpha * (isHovered ? 1 : 0.8)
+
+      const aura = ctx.createRadialGradient(ball.x, ball.y, 0, ball.x, ball.y, radius * 2.2)
+      aura.addColorStop(0, `rgba(${r},${g},${b},${isHovered ? 0.24 : 0.09})`)
+      aura.addColorStop(1, `rgba(${r},${g},${b},0)`)
+
+      ctx.beginPath()
+      ctx.arc(ball.x, ball.y, radius * 2.2, 0, Math.PI * 2)
+      ctx.fillStyle = aura
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.arc(ball.x, ball.y, radius, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(${r},${g},${b},${isHovered ? 0.22 : 0.12})`
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.arc(ball.x, ball.y, radius, 0, Math.PI * 2)
+      ctx.strokeStyle = `rgba(${r},${g},${b},${isHovered ? 0.92 : 0.45})`
+      ctx.lineWidth = isHovered ? 1.6 : 0.85
+      ctx.stroke()
+
+      if (isHovered) {
+        const pulseRadius = radius + 7 + Math.sin(ball.phase) * 2.5
+        ctx.beginPath()
+        ctx.arc(ball.x, ball.y, pulseRadius, 0, Math.PI * 2)
+        ctx.strokeStyle = `rgba(${r},${g},${b},0.26)`
+        ctx.lineWidth = 0.7
+        ctx.stroke()
+      }
+
+      const fontSize = ball.size > 50 ? 13 : 11
+      ctx.font = `${isHovered ? 600 : 500} ${fontSize}px "Space Grotesk", sans-serif`
+      ctx.fillStyle = isHovered
+        ? `rgb(${r},${g},${b})`
+        : `rgba(${r},${g},${b},0.9)`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(ball.name, ball.x, ball.y)
+
+      ctx.globalAlpha = 1
+    }
+
+    const repel = (ball) => {
+      const dx = ball.x - mouseRef.current.x
+      const dy = ball.y - mouseRef.current.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      if (distance < 92 && distance > 0) {
+        const force = ((92 - distance) / 92) * 1.9
+        ball.vx += (dx / distance) * force
+        ball.vy += (dy / distance) * force
+      }
+    }
+
+    const attract = (ball) => {
+      const dx = ball.x - mouseRef.current.x
+      const dy = ball.y - mouseRef.current.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      if (distance > 95 && distance < 210) {
+        const force = ((210 - distance) / 210) * 0.085
+        ball.vx -= (dx / distance) * force
+        ball.vy -= (dy / distance) * force
+      }
+    }
+
+    const collide = (a, b) => {
+      const dx = a.x - b.x
+      const dy = a.y - b.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+      const minDistance = a.size + b.size + 12
+
+      if (distance < minDistance && distance > 0) {
+        const nx = dx / distance
+        const ny = dy / distance
+        const overlap = (minDistance - distance) * 0.28
+
+        a.x += nx * overlap
+        a.y += ny * overlap
+        b.x -= nx * overlap
+        b.y -= ny * overlap
+
+        const relative = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny
+        if (relative < 0) {
+          a.vx -= relative * nx * 0.52
+          a.vy -= relative * ny * 0.52
+          b.vx += relative * nx * 0.52
+          b.vy += relative * ny * 0.52
+        }
+      }
+    }
+
+    const loop = () => {
+      ctx.clearRect(0, 0, width, height)
+
+      ctx.fillStyle = 'rgba(0,0,0,0.012)'
+      for (let y = 0; y < height; y += 3) {
+        ctx.fillRect(0, y, width, 1)
+      }
+
+      const balls = ballsRef.current
+      let nextHovered = null
+
+      balls.forEach((ball) => {
+        ball.alpha = Math.min(1, ball.alpha + 0.015)
+        ball.phase += 0.022
+        ball.vx *= 0.972
+        ball.vy *= 0.972
+        ball.vx += (Math.random() - 0.5) * 0.018
+        ball.vy += (Math.random() - 0.5) * 0.018
+
+        repel(ball)
+        attract(ball)
+
+        ball.x += ball.vx
+        ball.y += ball.vy
+
+        const pad = ball.size + 2
+        if (ball.x < pad) {
+          ball.x = pad
+          ball.vx = Math.abs(ball.vx) * 0.6
+        }
+        if (ball.x > width - pad) {
+          ball.x = width - pad
+          ball.vx = -Math.abs(ball.vx) * 0.6
+        }
+        if (ball.y < pad) {
+          ball.y = pad
+          ball.vy = Math.abs(ball.vy) * 0.6
+        }
+        if (ball.y > height - pad - 70) {
+          ball.y = height - pad - 70
+          ball.vy = -Math.abs(ball.vy) * 0.6
+        }
+
+        const mdx = ball.x - mouseRef.current.x
+        const mdy = ball.y - mouseRef.current.y
+        if (Math.sqrt(mdx * mdx + mdy * mdy) < ball.size + 12) {
+          nextHovered = ball
+        }
+      })
+
+      for (let pass = 0; pass < 3; pass += 1) {
+        for (let i = 0; i < balls.length; i += 1) {
+          for (let j = i + 1; j < balls.length; j += 1) {
+            collide(balls[i], balls[j])
+          }
+        }
+      }
+
+      balls.forEach((ball) => {
+        if (ball !== nextHovered) {
+          drawBall(ball, false)
+        }
+      })
+      if (nextHovered) {
+        drawBall(nextHovered, true)
+      }
+
+      if (nextHovered !== hovRef.current) {
+        hovRef.current = nextHovered
+        setHovered(nextHovered ? { ...nextHovered } : null)
+      }
+
+      rafRef.current = window.requestAnimationFrame(loop)
+    }
+
+    resize()
+    loop()
+
+    const observer = new ResizeObserver(() => {
+      window.cancelAnimationFrame(rafRef.current)
+      resize()
+      loop()
+    })
+
+    observer.observe(stage)
+
+    return () => {
+      window.cancelAnimationFrame(rafRef.current)
+      observer.disconnect()
+    }
+  }, [skillNodes])
+
+  const onMouseMove = (event) => {
+    const rect = stageRef.current.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+
+    mouseRef.current = { x, y }
+  }
+
+  const onMouseLeave = () => {
+    mouseRef.current = { x: -9999, y: -9999 }
+    setHovered(null)
+    hovRef.current = null
+  }
+
+  const onClick = () => {
+    ballsRef.current.forEach((ball) => {
+      ball.vx += (Math.random() - 0.5) * 5
+      ball.vy += (Math.random() - 0.5) * 5
+    })
+  }
+
+  if (!skillNodes.length) {
+    return null
+  }
 
   return (
     <section
-      id="skills"
-      className="fade-in scroll-mt-24 space-y-4"
-      aria-labelledby="skills-title"
+      id='skills'
+      className='fade-in scroll-mt-24 space-y-4'
+      aria-labelledby='skills-title'
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="skills-title" className="font-display text-3xl text-zinc-100 md:text-4xl">
-          Skills 
+      <div className='flex flex-wrap items-center justify-between gap-3'>
+        <h2 id='skills-title' className='font-display text-3xl text-zinc-100 md:text-4xl'>
+          Skills
         </h2>
-        <p className="text-sm uppercase tracking-[0.15em] text-zinc-400">
-          Click a category node to expand branch
+        <p className='text-sm uppercase tracking-[0.15em] text-zinc-400'>
+          Move to explore and click to scatter
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-        {/* Left: Tree Graph */}
-        <div className="relative overflow-hidden rounded-3xl border border-cyan-300/25 bg-[radial-gradient(circle_at_50%_30%,rgba(34,211,238,0.20),rgba(3,7,18,0.95)_55%)] p-4 md:p-6">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(transparent_96%,rgba(34,211,238,0.08)_100%)] bg-[length:100%_7px] opacity-30" />
+      <div className='w-full rounded-3xl border border-cyan-300/25 bg-[radial-gradient(circle_at_50%_18%,rgba(34,211,238,0.17),rgba(2,6,23,0.94)_58%)] p-3 md:p-5'>
+        <div
+          ref={stageRef}
+          className='relative w-full overflow-hidden rounded-2xl border border-white/10'
+          style={{ height: '560px', background: '#0b0c14', cursor: 'default' }}
+          onMouseMove={onMouseMove}
+          onMouseLeave={onMouseLeave}
+          onClick={onClick}
+        >
+          <canvas ref={canvasRef} className='absolute inset-0' />
 
-          <div className="relative mx-auto aspect-square w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-950/35 p-3">
-            <svg
-              viewBox="0 0 100 100"
-              className="pointer-events-none absolute inset-0 h-full w-full"
-              aria-hidden="true"
-            >
-              <circle cx="50" cy="50" r="17" fill="rgba(34,211,238,0.09)" />
-              {nodeLayout.map((position, index) => {
-                const x = Number.parseFloat(position.left)
-                const y = Number.parseFloat(position.top)
-                const isActive = index === activeIndex
-
-                return (
-                  <line
-                    key={`${position.left}-${position.top}`}
-                    x1="50"
-                    y1="50"
-                    x2={x}
-                    y2={y}
-                    stroke={isActive ? 'rgba(34,211,238,0.85)' : 'rgba(148,163,184,0.25)'}
-                    strokeWidth={isActive ? '0.8' : '0.45'}
-                  />
-                )
-              })}
-            </svg>
-
-            <div className="absolute left-1/2 top-1/2 z-10 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-300/55 bg-cyan-500/20 shadow-[0_0_34px_rgba(34,211,238,0.45)]">
-              <div className="text-center">
-                <p className="font-display text-lg font-semibold text-zinc-50">Bisesh</p>
-                <p className="text-[9px] uppercase tracking-[0.2em] text-cyan-100">Stack</p>
-              </div>
-            </div>
-
-            {categories.map((category, index) => {
-              const position = nodeLayout[index % nodeLayout.length]
-              const isActive = index === activeIndex
-
-              return (
-                <button
-                  key={category.title}
-                  type="button"
-                  onClick={() => setActiveIndex(index)}
-                  className={`group absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg border px-2 py-1.5 text-center text-xs transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${
-                    isActive
-                      ? 'border-cyan-300/75 bg-cyan-400/25 text-cyan-50 shadow-[0_0_28px_rgba(34,211,238,0.45)]'
-                      : 'border-slate-300/30 bg-slate-800/45 text-zinc-200 hover:border-cyan-300/50 hover:text-cyan-100'
-                  }`}
-                  style={{ top: position.top, left: position.left }}
-                  aria-pressed={isActive}
-                  aria-label={`Show ${category.title} skills`}
-                >
-                  <span className="block font-display text-[10px] uppercase tracking-[0.14em] md:text-xs">
-                    {category.title}
-                  </span>
-                </button>
-              )
-            })}
-
-            <div
-              className="pointer-events-none absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.7)]"
-              style={{ top: activeNodePosition.top, left: activeNodePosition.left }}
-              aria-hidden="true"
-            />
-          </div>
-        </div>
-
-        {/* Right: Expanded Branch */}
-        <div className="rounded-2xl border border-cyan-300/30 bg-zinc-950/55 p-4 md:p-5">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="font-display text-xl text-cyan-100">
-              {activeCategory.title}
-            </h3>
-            <span className="rounded-full border border-cyan-300/35 bg-cyan-400/10 px-3 py-1 text-xs text-cyan-200">
-              {activeCategory.items.length} skills
-            </span>
+          <div
+            className='pointer-events-none absolute bottom-7 left-1/2 -translate-x-1/2 select-none whitespace-nowrap transition-all duration-300'
+            style={{
+              fontFamily: '"Space Grotesk", sans-serif',
+              fontWeight: 700,
+              fontSize: hovered ? '54px' : '44px',
+              color: hovered ? hoveredColor : 'rgba(255,255,255,0.06)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            {hovered ? hovered.name : 'HOVER'}
           </div>
 
-          <ul className="space-y-2.5" role="tree" aria-label={`${activeCategory.title} skills`}>
-            {activeCategory.items.map((skill) => (
-              <li
-                key={skill.name}
-                role="treeitem"
-                className="group relative rounded-lg border border-cyan-300/20 bg-cyan-500/5 px-3 py-2"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-cyan-100">{skill.name}</p>
-                    <p className="text-xs text-zinc-400">{skill.tip}</p>
-                  </div>
-                  {skill.level && (
-                    <span className="ml-2 text-xs text-cyan-200">{skill.level}%</span>
-                  )}
-                </div>
-                {skill.level && (
-                  <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full border border-cyan-300/20 bg-zinc-900/50">
-                    <div
-                      className="h-full bg-gradient-to-r from-cyan-400 to-teal-400 transition-all duration-500"
-                      style={{ width: `${skill.level}%` }}
-                      aria-valuenow={skill.level}
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                      role="progressbar"
-                    />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
         </div>
+      </div>
+
+      <div className='flex flex-wrap gap-5'>
+        {legend.map((item) => (
+          <div key={item.label} className='flex items-center gap-2'>
+            <div className='h-2 w-2 flex-shrink-0 rounded-full' style={{ background: item.color }} />
+            <span className='text-[11px] tracking-wide text-white/35'>{item.label}</span>
+          </div>
+        ))}
       </div>
     </section>
   )
