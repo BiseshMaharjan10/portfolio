@@ -262,13 +262,6 @@ function App() {
                   </Link>
                 </li>
               </ul>
-
-              <Link
-                to="/contact"
-                className="mt-6 inline-flex items-center rounded-xl border border-cyan-300/45 bg-cyan-400/15 px-6 py-3 text-base font-semibold text-cyan-100 transition-all duration-300 hover:bg-cyan-300/20"
-              >
-                Hire Me
-              </Link>
             </div>
           </div>
         </div>
