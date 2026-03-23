@@ -74,7 +74,7 @@ function ProjectsSection() {
             {projects.map((project, index) => (
               <div
                 key={`mobile-${project.title}`}
-                className="w-[72vw] max-w-[250px] flex-none snap-center"
+                className="w-[78vw] max-w-[285px] flex-none snap-center"
                 style={{ animationDelay: `${120 + index * 120}ms` }}
               >
                 <ProjectCard project={project} />
