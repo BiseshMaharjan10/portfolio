@@ -125,6 +125,6 @@ export const projects = [
     stack: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
     liveUrl: 'https://example.com/live-3',
     sourceUrl: 'https://github.com/beebek1/verdura',
-    status: 'WIP',
+    status: 'Production',
   },
 ]

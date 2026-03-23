@@ -36,17 +36,15 @@ function ProjectsSection() {
       return
     }
 
-    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
-      ? event.deltaX
-      : event.deltaY
+    const horizontalDelta = event.deltaX
 
-    if (Math.abs(delta) < 4) {
+    if (Math.abs(horizontalDelta) < 4) {
       return
     }
 
     event.preventDefault()
     wheelLockRef.current = now
-    shiftProject(delta > 0 ? 1 : -1)
+    shiftProject(horizontalDelta > 0 ? 1 : -1)
   }
 
   return (
@@ -192,12 +190,12 @@ function App() {
             </li>
           </ul>
 
-          <Link
-            to="/contact"
+          <a
+            href="#contact"
             className="rounded-lg border border-cyan-300/40 bg-cyan-400/15 px-3 py-2 text-sm font-medium text-cyan-100 transition-colors duration-300 hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
           >
             Hire Me
-          </Link>
+          </a>
         </nav>
       </header>
 
