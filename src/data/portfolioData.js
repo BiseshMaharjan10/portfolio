@@ -22,19 +22,19 @@ export const profile = {
   socialLinks: [
     {
       label: 'GitHub',
-      href: 'https://github.com/',
+      href: 'https://github.com/BiseshMaharjan10',
       handle: '@bisesh',
       icon: 'github',
     },
     {
       label: 'LinkedIn',
-      href: 'https://linkedin.com/',
+      href: 'https://www.linkedin.com/in/bisesh-maharjan-09a904334/',
       handle: '/in/bisesh',
       icon: 'linkedin',
     },
     {
       label: 'Instagram',
-      href: 'https://instagram.com/',
+      href: 'https://www.instagram.com/bisesh_0175/',
       handle: '@bisesh.dev',
       icon: 'instagram',
     },
