@@ -170,6 +170,13 @@ function ScrollManager() {
 }
 
 function App() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-zinc-950 text-zinc-50">
       <Starfield />
@@ -178,39 +185,93 @@ function App() {
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_75%_20%,rgba(45,212,191,0.14),transparent_36%),radial-gradient(circle_at_10%_80%,rgba(56,189,248,0.12),transparent_40%)]" />
 
       <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl">
-        <nav className="mx-auto grid w-full max-w-[1700px] grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-4 md:px-8 lg:px-14">
-          <Link
-            to="/"
-            className="font-display text-lg tracking-wide text-cyan-100 transition-colors hover:text-cyan-300"
-          >
-            Bisesh Maharjan
-          </Link>
+        <div className="mx-auto w-full max-w-[1700px] px-4 py-3 md:px-8 md:py-4 lg:px-14">
+          <nav className="flex items-center justify-between gap-3 md:grid md:grid-cols-[auto_1fr_auto] md:gap-4">
+            <Link
+              to="/"
+              className="font-display text-lg tracking-wide text-cyan-100 transition-colors hover:text-cyan-300"
+            >
+              Bisesh Maharjan
+            </Link>
 
-          <ul className="flex items-center justify-center gap-4 text-sm text-zinc-300 md:gap-6">
-            <li>
-              <Link to="/skills" className="transition-colors hover:text-cyan-200">
-                Skills
-              </Link>
-            </li>
-            <li>
-              <Link to="/projects" className="transition-colors hover:text-cyan-200">
-                Projects
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="transition-colors hover:text-cyan-200">
-                Contact
-              </Link>
-            </li>
-          </ul>
+            <ul className="hidden items-center justify-center gap-4 text-sm text-zinc-300 md:flex md:gap-6">
+              <li>
+                <Link to="/skills" className="transition-colors hover:text-cyan-200">
+                  Skills
+                </Link>
+              </li>
+              <li>
+                <Link to="/projects" className="transition-colors hover:text-cyan-200">
+                  Projects
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="transition-colors hover:text-cyan-200">
+                  Contact
+                </Link>
+              </li>
+            </ul>
 
-          <Link
-            to="/contact"
-            className="rounded-lg border border-cyan-300/40 bg-cyan-400/15 px-3 py-2 text-sm font-medium text-cyan-100 transition-colors duration-300 hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
+            <div className="flex items-center gap-3">
+              <Link
+                to="/contact"
+                className="rounded-xl border border-cyan-300/45 bg-cyan-400/15 px-4 py-2 text-sm font-semibold text-cyan-100 transition-all duration-300 hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
+              >
+                Hire Me
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen((current) => !current)}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-cyan-300/45 bg-cyan-400/10 text-cyan-100 transition-colors hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 md:hidden"
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-nav-menu"
+              >
+                <span className="text-lg">{isMobileMenuOpen ? 'x' : '≡'}</span>
+              </button>
+            </div>
+          </nav>
+
+          <div
+            id="mobile-nav-menu"
+            className={`overflow-hidden transition-all duration-300 md:hidden ${
+              isMobileMenuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+            }`}
           >
-            Hire Me
-          </Link>
-        </nav>
+            <div className="mt-3 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 backdrop-blur-xl">
+              <ul className="space-y-4 text-lg text-zinc-300">
+                <li>
+                  <Link to="/" className="transition-colors hover:text-cyan-200">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/skills" className="transition-colors hover:text-cyan-200">
+                    Skills
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/projects" className="transition-colors hover:text-cyan-200">
+                    Projects
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="transition-colors hover:text-cyan-200">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+
+              <Link
+                to="/contact"
+                className="mt-6 inline-flex items-center rounded-xl border border-cyan-300/45 bg-cyan-400/15 px-6 py-3 text-base font-semibold text-cyan-100 transition-all duration-300 hover:bg-cyan-300/20"
+              >
+                Hire Me
+              </Link>
+            </div>
+          </div>
+        </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-[1700px] flex-col gap-8 px-4 pb-8 pt-24 md:gap-10 md:px-8 md:pb-12 md:pt-28 lg:px-14">
