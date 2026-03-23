@@ -65,18 +65,16 @@ function ProjectsSection() {
       </p>
 
       <div className="space-y-4">
-        <p className="text-xs uppercase tracking-[0.16em] text-cyan-200/80">
-          Swipe left or right to view projects
-        </p>
-
-        <div className="-mx-1 overflow-x-auto pb-1 md:hidden no-scrollbar">
-          <div className="flex snap-x snap-mandatory gap-4 px-1">
-            {projects.map((project) => (
-              <div key={`mobile-${project.title}`} className="w-[92%] max-w-[430px] flex-none snap-center">
-                <ProjectCard project={project} />
-              </div>
-            ))}
-          </div>
+        <div className="space-y-4 md:hidden">
+          {projects.map((project, index) => (
+            <div
+              key={`mobile-${project.title}`}
+              className="fade-in"
+              style={{ animationDelay: `${120 + index * 120}ms` }}
+            >
+              <ProjectCard project={project} />
+            </div>
+          ))}
         </div>
 
         <div
