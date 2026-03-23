@@ -12,7 +12,7 @@ export default function ProjectCard({ project }) {
           src={project.image}
           alt={`${project.title} preview`}
           loading="lazy"
-          className={`h-56 w-full transition-transform duration-500 md:h-64 ${
+          className={`h-44 w-full transition-transform duration-500 md:h-64 ${
             usesContainImage
               ? 'object-contain p-2'
               : 'object-cover group-hover:scale-105'
