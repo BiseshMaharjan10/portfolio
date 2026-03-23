@@ -35,7 +35,7 @@ export default function AboutMe({ profile }) {
       className="fade-in relative min-h-[calc(100svh-9.5rem)] w-full overflow-hidden"
       aria-labelledby="about-title"
     >
-      <div className="relative grid w-full items-center gap-8 pt-8 lg:grid-cols-[0.9fr_minmax(460px,700px)_0.9fr] lg:pt-4">
+      <div className="relative grid w-full items-center gap-8 pt-20 lg:grid-cols-[0.9fr_minmax(460px,700px)_0.9fr] lg:pt-16">
         <div className="space-y-7">
           <div>
             <h1
@@ -74,7 +74,7 @@ export default function AboutMe({ profile }) {
           </p>
         </div>
 
-        <div className="relative flex h-[620px] items-end justify-center md:h-[740px]">
+        <div className="relative flex h-[560px] items-end justify-center md:h-[680px]">
           <img
             src={profileImage}
             alt={`${profile.name} portrait`}
