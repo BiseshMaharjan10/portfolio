@@ -12,7 +12,7 @@ export default function ProjectCard({ project }) {
           src={project.image}
           alt={`${project.title} preview`}
           loading="lazy"
-          className={`h-36 w-full transition-transform duration-500 md:h-64 ${
+          className={`h-32 w-full transition-transform duration-500 md:h-64 ${
             usesContainImage
               ? 'object-contain p-2'
               : 'object-cover group-hover:scale-105'
@@ -31,8 +31,8 @@ export default function ProjectCard({ project }) {
         )}
       </div>
 
-      <div className="space-y-4 p-5">
-        <h3 className="font-display text-2xl text-zinc-100">{project.title}</h3>
+      <div className="space-y-3 p-4 md:space-y-4 md:p-5">
+        <h3 className="font-display text-xl text-zinc-100 md:text-2xl">{project.title}</h3>
         <p className="text-sm leading-relaxed text-zinc-300">{project.description}</p>
 
         <ul className="flex flex-wrap gap-2" aria-label={`${project.title} tech stack`}>
