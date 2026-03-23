@@ -1,9 +1,35 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SocialIcon from './SocialIcon'
 import profileImage from '../assets/profile.jpeg'
 
 export default function AboutMe({ profile }) {
-  const primaryRole = profile.roles?.[0] || 'Fullstack Developer'
+  const [roleIndex, setRoleIndex] = useState(0)
+  const [isRoleVisible, setIsRoleVisible] = useState(true)
+
+  useEffect(() => {
+    if (!profile.roles?.length) return undefined
+
+    let swapTimer
+
+    const interval = window.setInterval(() => {
+      setIsRoleVisible(false)
+
+      swapTimer = window.setTimeout(() => {
+        setRoleIndex((current) => (current + 1) % profile.roles.length)
+        setIsRoleVisible(true)
+      }, 520)
+    }, 3600)
+
+    return () => {
+      window.clearInterval(interval)
+      if (swapTimer) {
+        window.clearTimeout(swapTimer)
+      }
+    }
+  }, [profile.roles])
+
+  const currentRole = profile.roles?.[roleIndex] || 'Fullstack Developer'
 
   return (
     <section
@@ -25,8 +51,13 @@ export default function AboutMe({ profile }) {
               {profile.name}
             </h1>
 
-            <p className="mt-4 font-display text-xl text-cyan-100 md:text-2xl" aria-live="polite">
-              {primaryRole}
+            <p
+              className={`mt-4 font-display text-xl text-cyan-100 transition-all duration-700 ease-out md:text-2xl ${
+                isRoleVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+              }`}
+              aria-live="polite"
+            >
+              {currentRole}
             </p>
           </div>
 
@@ -93,8 +124,12 @@ export default function AboutMe({ profile }) {
 
           <div>
             <p className="text-xs uppercase tracking-[0.15em] text-zinc-500">Current Focus</p>
-            <p className="mt-2 font-display text-3xl leading-tight text-zinc-100 md:text-4xl">
-              {primaryRole}
+            <p
+              className={`mt-2 font-display text-3xl leading-tight text-zinc-100 transition-all duration-700 ease-out md:text-4xl ${
+                isRoleVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+              }`}
+            >
+              {currentRole}
             </p>
           </div>
         </div>
