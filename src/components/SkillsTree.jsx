@@ -23,7 +23,7 @@ export default function SkillsTree({ categories }) {
   return (
     <section
       id="skills"
-      className="fade-in scroll-mt-24 space-y-4 rounded-3xl border border-white/10 bg-transparent p-6 md:p-8"
+      className="fade-in scroll-mt-24 space-y-4"
       aria-labelledby="skills-title"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
