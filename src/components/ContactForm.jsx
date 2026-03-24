@@ -112,7 +112,7 @@ export default function ContactForm() {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full rounded-xl border border-white/15 bg-zinc-900/70 px-3 py-2 text-zinc-100 outline-none transition-colors duration-300 placeholder:text-zinc-500 focus:border-cyan-300"
+            className="w-full rounded-xl border border-white/15 bg-transparent px-3 py-2 text-zinc-100 outline-none transition-colors duration-300 placeholder:text-zinc-500 focus:border-cyan-300"
             placeholder="Your name"
             aria-invalid={Boolean(errors.name)}
           />
@@ -126,7 +126,7 @@ export default function ContactForm() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full rounded-xl border border-white/15 bg-zinc-900/70 px-3 py-2 text-zinc-100 outline-none transition-colors duration-300 placeholder:text-zinc-500 focus:border-cyan-300"
+            className="w-full rounded-xl border border-white/15 bg-transparent px-3 py-2 text-zinc-100 outline-none transition-colors duration-300 placeholder:text-zinc-500 focus:border-cyan-300"
             placeholder="you@example.com"
             aria-invalid={Boolean(errors.email)}
           />
@@ -141,7 +141,7 @@ export default function ContactForm() {
           value={formData.message}
           onChange={handleChange}
           rows={5}
-          className="w-full rounded-xl border border-white/15 bg-zinc-900/70 px-3 py-2 text-zinc-100 outline-none transition-colors duration-300 placeholder:text-zinc-500 focus:border-cyan-300"
+          className="w-full rounded-xl border border-white/15 bg-transparent px-3 py-2 text-zinc-100 outline-none transition-colors duration-300 placeholder:text-zinc-500 focus:border-cyan-300"
           placeholder="Tell me about your project"
           aria-invalid={Boolean(errors.message)}
         />

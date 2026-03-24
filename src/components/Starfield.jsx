@@ -56,7 +56,7 @@ export default function Starfield() {
   }, [])
 
   return (
-    <div className="starfield pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div className="starfield pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
       <div className="star-dust absolute inset-0" />
 
       {farStars.map((star) => (

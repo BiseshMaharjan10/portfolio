@@ -289,8 +289,12 @@ function App() {
         className={`fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl transition-transform duration-300 ease-out ${
           isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
+        style={{overflow: 'hidden'}} // ensure absolutely positioned children are clipped
       >
-        <div className="mx-auto w-full max-w-[1700px] px-4 py-3 md:px-8 md:py-4 lg:px-14">
+        <div className="pointer-events-none absolute inset-0 -z-10 w-full h-full">
+          <Starfield />
+        </div>
+        <div className="mx-auto w-full max-w-[1700px] px-4 py-3 md:px-8 md:py-4 lg:px-14 relative z-10">
           <nav className="flex items-center justify-between gap-3 md:grid md:grid-cols-[auto_1fr_auto] md:gap-4">
             <Link
               to="/"

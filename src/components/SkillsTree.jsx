@@ -23,6 +23,8 @@ function normalizeCategory(title) {
   return (title || 'General').trim()
 }
 
+import Starfield from './Starfield'
+
 export default function SkillsTree({ categories = [] }) {
   const stageRef = useRef(null)
   const canvasRef = useRef(null)
@@ -337,9 +339,12 @@ export default function SkillsTree({ categories = [] }) {
   return (
     <section
       id='skills'
-      className='fade-in scroll-mt-24 space-y-4'
+      className='fade-in scroll-mt-24 space-y-4 relative overflow-hidden'
       aria-labelledby='skills-title'
     >
+      <div className="pointer-events-none absolute inset-0 -z-10 w-full h-full">
+        <Starfield />
+      </div>
       <div className='flex flex-wrap items-center justify-between gap-3'>
         <h2 id='skills-title' className='font-display text-3xl text-zinc-100 md:text-4xl'>
           Skills
