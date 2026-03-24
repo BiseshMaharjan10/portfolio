@@ -178,7 +178,8 @@ function App() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const lastScrollYRef = useRef(null)
   const hasUserInteractedRef = useRef(false)
-  const { pathname } = useLocation()
+  const location = useLocation()
+  const { pathname } = location
   const navigate = useNavigate()
 
   const scrollToSection = (sectionId) => {
@@ -204,6 +205,20 @@ function App() {
   useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    if (typeof window.gtag !== 'function') {
+      return
+    }
+
+    const pagePath = `${location.pathname}${location.search}${location.hash}`
+
+    window.gtag('event', 'page_view', {
+      page_path: pagePath,
+      page_location: window.location.href,
+      page_title: document.title,
+    })
+  }, [location.pathname, location.search, location.hash])
 
   useEffect(() => {
     setIsHeaderVisible(true)
