@@ -175,6 +175,9 @@ function ScrollManager() {
 
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true)
+  const lastScrollYRef = useRef(null)
+  const hasUserInteractedRef = useRef(false)
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -202,6 +205,77 @@ function App() {
     setIsMobileMenuOpen(false)
   }, [pathname])
 
+  useEffect(() => {
+    setIsHeaderVisible(true)
+    lastScrollYRef.current = null
+    hasUserInteractedRef.current = false
+  }, [pathname])
+
+  useEffect(() => {
+    const markInteraction = () => {
+      hasUserInteractedRef.current = true
+    }
+
+    const handleKeyDown = (event) => {
+      const interactionKeys = ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' ']
+      if (interactionKeys.includes(event.key)) {
+        hasUserInteractedRef.current = true
+      }
+    }
+
+    window.addEventListener('wheel', markInteraction, { passive: true })
+    window.addEventListener('touchstart', markInteraction, { passive: true })
+    window.addEventListener('pointerdown', markInteraction, { passive: true })
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('wheel', markInteraction)
+      window.removeEventListener('touchstart', markInteraction)
+      window.removeEventListener('pointerdown', markInteraction)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+
+      if (lastScrollYRef.current === null) {
+        lastScrollYRef.current = currentScrollY
+        setIsHeaderVisible(true)
+        return
+      }
+
+      if (isMobileMenuOpen) {
+        setIsHeaderVisible(true)
+        lastScrollYRef.current = currentScrollY
+        return
+      }
+
+      if (!hasUserInteractedRef.current) {
+        setIsHeaderVisible(true)
+        lastScrollYRef.current = currentScrollY
+        return
+      }
+
+      if (currentScrollY <= 12) {
+        setIsHeaderVisible(true)
+      } else if (currentScrollY > lastScrollYRef.current + 6) {
+        setIsHeaderVisible(false)
+      } else if (currentScrollY < lastScrollYRef.current - 6) {
+        setIsHeaderVisible(true)
+      }
+
+      lastScrollYRef.current = currentScrollY
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [isMobileMenuOpen])
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-zinc-950 text-zinc-50">
       <Starfield />
@@ -209,7 +283,11 @@ function App() {
       <div className="pointer-events-none absolute inset-0 -z-10 bg-hero-gradient" />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_75%_20%,rgba(45,212,191,0.14),transparent_36%),radial-gradient(circle_at_10%_80%,rgba(56,189,248,0.12),transparent_40%)]" />
 
-      <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl">
+      <header
+        className={`fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl transition-transform duration-300 ease-out ${
+          isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
         <div className="mx-auto w-full max-w-[1700px] px-4 py-3 md:px-8 md:py-4 lg:px-14">
           <nav className="flex items-center justify-between gap-3 md:grid md:grid-cols-[auto_1fr_auto] md:gap-4">
             <Link
