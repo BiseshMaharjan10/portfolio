@@ -294,7 +294,7 @@ function App() {
         <div className="pointer-events-none absolute inset-0 -z-10 w-full h-full">
           <Starfield />
         </div>
-        <div className="mx-auto w-full max-w-[1700px] px-4 py-3 md:px-8 md:py-4 lg:px-14 relative z-10">
+        <div className="mx-auto w-full max-w-[1700px] px-6 py-3 md:px-8 md:py-4 lg:px-14 relative z-10">
           <nav className="flex items-center justify-between gap-3 md:grid md:grid-cols-[auto_1fr_auto] md:gap-4">
             <Link
               to="/"
@@ -392,14 +392,14 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1700px] flex-col gap-8 px-4 pb-8 pt-24 md:gap-10 md:px-12 md:pb-12 md:pt-28 lg:px-20">
+      <main className="mx-auto flex w-full max-w-[1700px] flex-col gap-8 px-6 pb-8 pt-24 md:gap-10 md:px-12 md:pb-12 md:pt-28 lg:px-20">
         <AboutMe profile={profile} />
         <SkillsSection />
         <ProjectsSection />
         <ContactSection />
       </main>
 
-      <footer className="mx-auto w-full max-w-[1700px] px-4 pb-10 text-sm text-zinc-400 md:px-12 lg:px-20">
+      <footer className="mx-auto w-full max-w-[1700px] px-6 pb-10 text-sm text-zinc-400 md:px-12 lg:px-20">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} Bisesh Maharjan.</p>
 
