@@ -339,7 +339,7 @@ export default function SkillsTree({ categories = [] }) {
   return (
     <section
       id='skills'
-      className='fade-in scroll-mt-24 space-y-4 relative overflow-hidden'
+      className='fade-in scroll-mt-24 space-y-4 relative overflow-hidden px-4 md:px-12'
       aria-labelledby='skills-title'
     >
       <div className="pointer-events-none absolute inset-0 -z-10 w-full h-full">

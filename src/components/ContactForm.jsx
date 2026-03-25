@@ -101,7 +101,7 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="fade-in space-y-4 rounded-3xl border border-white/10 bg-transparent p-6 md:p-8"
+      className="fade-in space-y-4 rounded-3xl border border-white/10 bg-transparent p-6 md:p-8 px-4 md:px-12"
       noValidate
     >
       <div className="grid gap-4 md:grid-cols-2">

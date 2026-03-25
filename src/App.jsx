@@ -92,9 +92,9 @@ function ProjectsSection() {
             const isVisible = Math.abs(offset) <= 1
 
             const transformByOffset = {
-              '-1': 'translate(-96%, -50%) rotateY(42deg) translateZ(-40px) scale(0.88)',
-              '0': 'translate(-50%, -50%) rotateY(0deg) translateZ(100px) scale(1)',
-              '1': 'translate(-4%, -50%) rotateY(-42deg) translateZ(-40px) scale(0.88)',
+                  '-1': 'translate(-120%, -50%) rotateY(42deg) translateZ(-40px) scale(0.88)',
+                  '0': 'translate(-50%, -50%) rotateY(0deg) translateZ(100px) scale(1)',
+                  '1': 'translate(20%, -50%) rotateY(-42deg) translateZ(-40px) scale(0.88)',
             }
 
             return (
@@ -392,14 +392,14 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1700px] flex-col gap-8 px-4 pb-8 pt-24 md:gap-10 md:px-8 md:pb-12 md:pt-28 lg:px-14">
+      <main className="mx-auto flex w-full max-w-[1700px] flex-col gap-8 px-4 pb-8 pt-24 md:gap-10 md:px-12 md:pb-12 md:pt-28 lg:px-20">
         <AboutMe profile={profile} />
         <SkillsSection />
         <ProjectsSection />
         <ContactSection />
       </main>
 
-      <footer className="mx-auto w-full max-w-[1700px] px-4 pb-10 text-sm text-zinc-400 md:px-8 lg:px-14">
+      <footer className="mx-auto w-full max-w-[1700px] px-4 pb-10 text-sm text-zinc-400 md:px-12 lg:px-20">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} Bisesh Maharjan.</p>
 

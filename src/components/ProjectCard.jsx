@@ -2,7 +2,7 @@ export default function ProjectCard({ project }) {
   const usesContainImage = project.imageFit === 'contain'
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-soft backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/40">
+    <article className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-soft backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/40 px-2 md:px-4">
       <div
         className={`relative overflow-hidden ${
           usesContainImage ? 'bg-zinc-100' : ''
@@ -31,7 +31,7 @@ export default function ProjectCard({ project }) {
         )}
       </div>
 
-      <div className="space-y-3 p-4 md:space-y-4 md:p-5">
+      <div className="space-y-3 p-2 md:space-y-4 md:p-3">
         <h3 className="font-display text-xl text-zinc-100 md:text-2xl">{project.title}</h3>
         <p className="text-sm leading-relaxed text-zinc-300">{project.description}</p>
 
